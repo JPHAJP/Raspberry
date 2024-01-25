@@ -14,7 +14,7 @@ def AgregarMemoria(tarea):
 
 
 def RISC(DiccionarioMemoriaProcesos):                       #Función para ejecutar los subprocesos
-    print(f'\nSe tienen {len(DiccionarioMemoriaProcesos)} subprocesos en RISC')
+    print(f'\nSe tienen {len(DiccionarioMemoriaProcesos)} subprocesos')
     for i in range(len(DiccionarioMemoriaProcesos)):
         print(f'\nEjecutando tarea_{i+1}')
         if DiccionarioMemoriaProcesos[i+1] > 8:
