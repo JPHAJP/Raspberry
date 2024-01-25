@@ -41,21 +41,3 @@ for i in range(int(Tareas_por_realizar)):
 #print(ListaTareas)
 AgregarMemoria(ListaTareas)
 #print(DiccionarioMemoriaProcesos)
-
-#----------Otro-----------------#
-# AgregarMemoria(tarea1)
-# AgregarMemoria(tarea2)
-#print(ListaMemoriaProcesos)
-#RISC(ListaMemoriaProcesos)
-#print(ListaRISC)
-
-
-    # for i in range(len(lista)):
-    #     ListaRISC.append(lista[i])
-    # print(f'Se tienen {len(ListaRISC)} subprocesos en RISC')
-    # print('Ejecutando subprocesos de RISC')
-    # for i in range(len(lista)):
-    #     print(f'Ejecutando subproceso {i+1} de {len(lista)} en RISC')
-    #     ListaRISC.pop()
-    #     sleep(1)
-    # print('Se han ejecutado todos los subprocesos de RISC')
