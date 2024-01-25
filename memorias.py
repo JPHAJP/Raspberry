@@ -26,11 +26,6 @@ def PROCESAR(DiccionarioMemoriaProcesos):                       #Función para e
             CISC(DiccionarioMemoriaProcesos,i+1)
         else:
             RISC(DiccionarioMemoriaProcesos,i+1)
-            # for j in range(DiccionarioMemoriaProcesos[i+1]):
-            #     print(f'Ejecutando subproceso {j+1} de {DiccionarioMemoriaProcesos[i+1]} de tarea_{i+1} en RISC')
-            #     sleep(0.5)
-            # del DiccionarioMemoriaProcesos[i+1]
-    print('Se han ejecutado todos los subprocesos')
 
 def RISC(DiccionarioMemoriaProcesos,tarea):
     print(f'\nEjecutando tarea_{tarea} de complejidad {DiccionarioMemoriaProcesos[tarea]} en RISC')
@@ -53,3 +48,4 @@ for i in range(int(Tareas_por_realizar)):
 #print(ListaTareas)
 AgregarMemoria(ListaTareas)
 #print(DiccionarioMemoriaProcesos)
+print('Se han ejecutado todos los subprocesos y las tareas han sido eliminadas de la memoria')
