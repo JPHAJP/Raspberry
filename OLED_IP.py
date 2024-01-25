@@ -59,7 +59,7 @@ def display_ip():
 time=60
 i=5
 while i>0:
-    time.sleep(time)
+    sleep(time)
     display_ip()
     i-=1
     sleep(time)
