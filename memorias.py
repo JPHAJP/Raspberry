@@ -36,5 +36,4 @@ for i in range(int(Tareas_por_realizar)):
     tarea=int(input(f'Introduzca la complejidad de la tarea_{i+1}: '))
     DiccionarioMemoriaProcesos[i+1]=int(tarea)
 PROCESAR(DiccionarioMemoriaProcesos) 
-#print(DiccionarioMemoriaProcesos)
 print('\nSe han ejecutado todos los subprocesos y las tareas han sido eliminadas de la memoria')
