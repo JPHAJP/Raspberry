@@ -10,10 +10,10 @@ def AgregarMemoria(tarea):
     for i in range(len(tarea)):                             #Agrega a un diccionario para separar tareas de complejidad y crear subprocesos
         DiccionarioMemoriaProcesos[i+1]=int(tarea[i])
     #print(DiccionarioMemoriaProcesos)
-    RISC(DiccionarioMemoriaProcesos)                        #Manda a llamar a la función RISC para ejecutar los subprocesos
+    PROCESAR(DiccionarioMemoriaProcesos)                        #Manda a llamar a la función RISC para ejecutar los subprocesos
 
 
-def RISC(DiccionarioMemoriaProcesos):                       #Función para ejecutar los subprocesos
+def PROCESAR(DiccionarioMemoriaProcesos):                       #Función para ejecutar los subprocesos
     print(f'\nSe tienen {len(DiccionarioMemoriaProcesos)} subprocesos')
     for i in range(len(DiccionarioMemoriaProcesos)):
         print(f'\nEjecutando tarea_{i+1}')
