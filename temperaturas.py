@@ -1,6 +1,6 @@
 import random
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def sensor_temp():
     return round(random.uniform(8,25),2)
@@ -20,6 +20,15 @@ def maximo(temperaturas):
 def minimo(temperaturas):
     return min(temperaturas)
 
+def guardar(temperaturas): 
+    fecha=datetime.fromtimestamp(random.randint(1704900000, 1707000000))
+    with open('temperaturas.txt','w') as archivo:
+        #agregar 60 segundos a la fecha
+        for i in range(len(temperaturas)):
+            fecha=fecha+timedelta(minutes=1)
+            archivo.write(f'{fecha}, - {temperaturas[i]}\n')
+    print('Lecturas guardadas en archivo')
+
 def reporte(temperaturas):
     print(f'\nLa temperatura promedio es: {promedio(temperaturas)}')
     print(f'La temperatura máxima es: {maximo(temperaturas)}')
@@ -30,3 +39,5 @@ cantidad_lecturas=int(input('Introduzca la cantidad de lecturas a realizar: '))
 temperaturas=lecturas(cantidad_lecturas)
 print(f'\nLas lecturas realizadas son: {temperaturas}')
 reporte(temperaturas)
+print('\nGuardando lecturas en archivo...')
+guardar(temperaturas)
