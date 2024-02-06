@@ -20,9 +20,7 @@ try:
         print(f'LED on for {time} seconds')
 
 except KeyboardInterrupt:
-    # If the user presses Ctrl+C, gracefully exit the loop
     print("\nExiting the program.")
 finally:
-    # Turn off the LED and clean up
     led.off()
     print("LED off")
