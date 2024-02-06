@@ -56,10 +56,10 @@ def display_ip():
         print("Unable to retrieve and display IP address.")
 
 # Display IP address on OLED
-time=60
+time=20
 i=5
 while i>0:
     sleep(time)
     display_ip()
     i-=1
-    sleep(time)
+    sleep(60)
