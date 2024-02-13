@@ -23,8 +23,11 @@ servo = Servo(17)
 while True:
     value = input("Enter a value between -1 and 1: ")
     value = float(value)
-    if value < -1 or value > 1:
-        print("Invalid input")
-    else:
-        servo.value = value
-        sleep(2)
+    servo.value = value
+    sleep(2)
+
+    # if value < -1 or value > 1:
+    #     print("Invalid input")
+    # else:
+    #     servo.value = value
+    #     sleep(2)
