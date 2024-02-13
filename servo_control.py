@@ -21,6 +21,7 @@ from time import sleep
 
 servo = Servo(17)
 value = input("Enter a value between -1 and 1: ")
+value = float(value)
 
 if value < -1 or value > 1:
     print("Invalid input")
