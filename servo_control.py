@@ -2,9 +2,8 @@
 from gpiozero import Servo
 from time import sleep
  
-myGPIO=17
- 
-myCorrection=0.55
+myGPIO=17 
+myCorrection=0
 maxPW=(2.0+myCorrection)/1000
 minPW=(1.0-myCorrection)/1000
  
@@ -17,7 +16,7 @@ while True:
         print("Invalid input")
     else:
         servo.value = value
-        sleep(2)
+        sleep(1)
 # while True:
 #     servo.mid()
 #     print("mid")
