@@ -39,7 +39,7 @@ from time import sleep
  
 myGPIO=17
  
-myCorrection=0.45
+myCorrection=0.40
 maxPW=(2.0+myCorrection)/1000
 minPW=(1.0-myCorrection)/1000
  
