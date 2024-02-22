@@ -53,21 +53,21 @@ def reporte(datos, tipo):
 
 #----------Inicio del programa-----------------#
 #generar lecturas
-cantidad_lecturas=10
+cantidad_lecturas=1000
 nombre='temperaturas.txt'
 
 #limpiar archivo
 archivo=mg(nombre)
 archivo.escritura_remplazo('Tiempo, Temperatura, Humedad, Presion\n')
-temp=[]
-hum=[]
-pres=[]
 datos=[]
 
 for i in range(cantidad_lecturas):
     datos.append(lecturas())
     print(f'\nLectura {i+1} de {cantidad_lecturas}')
     guardar(i,datos,nombre)
+    temp=[]
+    hum=[]
+    pres=[]
     for j in range(i+1):
         #temp.append(datos[j][0])
         temp.append(datos[j][0])
