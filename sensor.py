@@ -60,7 +60,7 @@ def reporte(datos, tipo):
 
 #----------Inicio del programa-----------------#
 #generar lecturas
-cantidad_lecturas=1000
+cantidad_lecturas=100
 nombre='datos_sensor.txt'
 
 #limpiar archivo
