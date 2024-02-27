@@ -12,10 +12,10 @@ def readserial(comport, baudrate):
     data = ser.readline().decode().strip()
     if data:
         print(data)
-        return int(data)
+        return float(data)
     else:
         print("No data")
-        return int(0)
+        return float(0)
 
 def sensor_humedad():
     return round(random.uniform(40,80),2)
