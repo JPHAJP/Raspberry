@@ -12,4 +12,4 @@ def readserial(comport, baudrate, timestamp=False):
 
 
 if __name__ == '__main__':
-    readserial('COM28', 115200, True)                          # COM port, Baudrate, Show timestamp
+    readserial('/dev/ttyACM0', 115200, True)                          # COM port, Baudrate, Show timestamp
