@@ -103,3 +103,25 @@ else:
 #     readserial('/dev/ttyACM0', 115200, True)                          # COM port, Baudrate, Show timestamp
 
 
+#-----------Arduino code-----------------#
+# const int potPin = A0;  // Analog input pin for the potentiometer
+# int potValue = 0;      // Variable to store the potentiometer value
+# float scaledValue = 0; // Variable to store the scaled value
+
+# void setup() {
+#   Serial.begin(115200);  // Initialize serial communication
+# }
+
+# void loop() {
+#   // Read the analog value from the potentiometer
+#   potValue = analogRead(potPin);
+
+#   // Map the potentiometer value from the range 0-1023 to 0-28
+#   scaledValue = map(potValue, 0, 1023, 0, 28);
+
+#   // Print the scaled potentiometer value to the serial monitor
+#   //Serial.print("Scaled Potentiometer Value: ");
+#   Serial.println(scaledValue);
+
+#   delay(500);  // Add a small delay to make the serial monitor output readable
+# }
