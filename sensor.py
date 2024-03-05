@@ -6,7 +6,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from archivos import manejador as mg
 
-def readserial(comport, baudrate):
+def readserial(comport, baudrate): #Esta fun
     #ser = serial.Serial(comport, baudrate, timeout=0.1)         # 1/timeout is the frequency at which the port is read
     ser = serial.Serial(comport, baudrate)         # 1/timeout is the frequency at which the port is read
     data = ser.readline().decode().strip()
@@ -60,7 +60,7 @@ def reporte(datos, tipo):
 
 #----------Inicio del programa-----------------#
 #generar lecturas
-cantidad_lecturas=100
+cantidad_lecturas=10
 nombre='datos_sensor.txt'
 
 #limpiar archivo
