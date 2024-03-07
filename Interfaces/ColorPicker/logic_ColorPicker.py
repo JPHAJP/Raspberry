@@ -1,0 +1,84 @@
+from ColorPicker import *
+#pyuic6 -x .\ejemplo_2.ui -o ejemplo_2.py
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self, *args, **kwargs):
+        QtWidgets.QMainWindow.__init__(self,*args, **kwargs)
+        self.setupUi(self)
+        #My code
+        self.dial_r.setMinimum(0)
+        self.dial_r.setMaximum(255)
+        self.dial_g.setMinimum(0)
+        self.dial_g.setMaximum(255)
+        self.dial_b.setMinimum(0)
+        self.dial_b.setMaximum(255)
+        self.slider_br.setMinimum(0)
+        self.slider_br.setMaximum(100)
+
+        self.set_values()
+        
+
+        self.dial_r.valueChanged.connect(self.choose_red)
+        self.dial_g.valueChanged.connect(self.choose_green)
+        self.dial_b.valueChanged.connect(self.choose_blue)
+        self.slider_br.valueChanged.connect(self.choose_brighness)
+    
+    def set_values(self):
+        self.dial_r.setValue(0)
+        self.lcdNumber_R.display(0)
+        self.dial_g.setValue(0)
+        self.lcdNumber_g.display(0)
+        self.dial_b.setValue(0)
+        self.lcdNumber_b.display(0)
+        self.slider_br.setValue(0)
+        self.lcdNumber_br.display(0)
+        self.choose_color()
+
+    
+    def choose_red(self):
+        red = self.dial_r.value()
+        self.lcdNumber_R.display(red)
+        self.choose_color()
+
+    def choose_green(self):
+        green = self.dial_g.value()
+        self.lcdNumber_g.display(green)
+        self.choose_color()
+        
+    def choose_blue(self):
+        blue = self.dial_b.value()
+        self.lcdNumber_b.display(blue)
+        self.choose_color()
+    
+    def choose_brighness(self):
+        brighness = self.slider_br.value()
+        self.lcdNumber_br.display(brighness)
+        self.choose_color()
+
+    def choose_color(self):
+        red = self.dial_r.value()
+        green = self.dial_g.value()
+        blue = self.dial_b.value()
+        brighness = self.slider_br.value()
+        red = int(red * (brighness / 100))
+        green = int(green * (brighness / 100))
+        blue = int(blue * (brighness / 100))
+        self.setStyleSheet(f"background-color: rgb({red}, {green}, {blue});")
+        if (brighness <= 50) or (red < 125 and green < 125 and blue < 125):
+            self.label_r.setStyleSheet("color: rgb(255, 255, 255)")
+            self.label_g.setStyleSheet("color: rgb(255, 255, 255)")
+            self.label_b.setStyleSheet("color: rgb(255, 255, 255)")
+            self.label_tt.setStyleSheet("color: rgb(255, 255, 255)")
+        else:
+            self.label_r.setStyleSheet("color: rgb(0, 0, 0)")
+            self.label_g.setStyleSheet("color: rgb(0, 0, 0)")
+            self.label_b.setStyleSheet("color: rgb(0, 0, 0)")
+            self.label_tt.setStyleSheet("color: rgb(0, 0, 0)")
+            
+
+    
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication([])
+    Window = MainWindow()
+    Window.show()
+    app.exec()
