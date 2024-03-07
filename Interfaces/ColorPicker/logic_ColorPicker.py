@@ -14,26 +14,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.slider_br.setMinimum(0)
         self.slider_br.setMaximum(100)
 
-        self.set_values()
+        self.set_values_color()
+        self.set_values_brighness()
         
-
         self.dial_r.valueChanged.connect(self.choose_red)
         self.dial_g.valueChanged.connect(self.choose_green)
         self.dial_b.valueChanged.connect(self.choose_blue)
         self.slider_br.valueChanged.connect(self.choose_brighness)
-    
-    def set_values(self):
+        self.Colo_R.triggered.connect(self.set_values_color)
+        self.Brightness_R.triggered.connect(self.set_values_brighness)
+
+    def set_values_color(self):
         self.dial_r.setValue(0)
         self.lcdNumber_R.display(0)
         self.dial_g.setValue(0)
         self.lcdNumber_g.display(0)
         self.dial_b.setValue(0)
         self.lcdNumber_b.display(0)
+        self.choose_color()
+    
+    def set_values_brighness(self):
         self.slider_br.setValue(0)
         self.lcdNumber_br.display(0)
         self.choose_color()
-
-    
+   
     def choose_red(self):
         red = self.dial_r.value()
         self.lcdNumber_R.display(red)
@@ -68,11 +72,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.label_g.setStyleSheet("color: rgb(255, 255, 255)")
             self.label_b.setStyleSheet("color: rgb(255, 255, 255)")
             self.label_tt.setStyleSheet("color: rgb(255, 255, 255)")
+            self.label_br.setStyleSheet("color: rgb(255, 255, 255)")
+            self.menubar.setStyleSheet("color: rgb(255, 255, 255)")
+            self.menuReset.setStyleSheet("color: rgb(255, 255, 255)")
         else:
             self.label_r.setStyleSheet("color: rgb(0, 0, 0)")
             self.label_g.setStyleSheet("color: rgb(0, 0, 0)")
             self.label_b.setStyleSheet("color: rgb(0, 0, 0)")
             self.label_tt.setStyleSheet("color: rgb(0, 0, 0)")
+            self.label_br.setStyleSheet("color: rgb(0, 0, 0)")
+            self.menubar.setStyleSheet("color: rgb(0, 0, 0)")
+            self.menuReset.setStyleSheet("color: rgb(0, 0, 0)")
             
 
     
