@@ -1,4 +1,4 @@
-from ColorPicker import *
+from ColorPicker_5 import *
 #pyuic6 -x .\ejemplo_2.ui -o ejemplo_2.py
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
