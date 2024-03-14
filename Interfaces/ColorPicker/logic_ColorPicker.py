@@ -1,5 +1,8 @@
 from ColorPicker_5 import *
+from gpiozero import RGBLED
 #pyuic6 -x .\ejemplo_2.ui -o ejemplo_2.py
+
+led=RGBLED(17,27,22)
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self,*args, **kwargs)
@@ -66,6 +69,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         red = int(red * (brighness / 100))
         green = int(green * (brighness / 100))
         blue = int(blue * (brighness / 100))
+        led.value=(red/255,green/255,blue/255)
+        #print(f"RGB: {red}, {green}, {blue}")
+
         self.setStyleSheet(f"background-color: rgb({red}, {green}, {blue});")
         if (brighness <= 50) or (red < 125 and green < 125 and blue < 125):
             self.label_r.setStyleSheet("color: rgb(255, 255, 255)")
