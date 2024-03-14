@@ -60,7 +60,11 @@ def reporte(datos, tipo):
 
 #----------Inicio del programa-----------------#
 #generar lecturas
+<<<<<<< Updated upstream
 cantidad_lecturas=10
+=======
+cantidad_lecturas=20
+>>>>>>> Stashed changes
 nombre='datos_sensor.txt'
 
 #limpiar archivo
