@@ -1,8 +1,26 @@
 from ColorPicker_5 import *
-from gpiozero import RGBLED
+#from gpiozero import RGBLED
+
+from time import sleep
+
+#add adafruit neopixel library
+#sudo pip3 install rpi_ws281x adafruit-circuitpython-neopixel
+#sudo python3 -m pip install --force-reinstall adafruit-blinka
+#sudo pip3 install adafruit-circuitpython-neopixel
+#sudo pip3 install rpi_ws281x
+#from neopixel import NeoPixel
+#import board
+
+# Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
+# NeoPixels must be connected to D10, D12, D18 or D21 to work.
+#pixel_pin = board.D18
+
+
+#led = RGBLED(red=17, green=27, blue=22)  # Use the GPIO pin number, not the physical pin number 
+
 #pyuic6 -x .\ejemplo_2.ui -o ejemplo_2.py
 
-led=RGBLED(17,27,22)
+#led=RGBLED(17,27,22)
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self,*args, **kwargs)
@@ -69,10 +87,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         red = int(red * (brighness / 100))
         green = int(green * (brighness / 100))
         blue = int(blue * (brighness / 100))
-        led.value=(red/255,green/255,blue/255)
+        #led.value=(red/255,green/255,blue/255)
         #print(f"RGB: {red}, {green}, {blue}")
 
         self.setStyleSheet(f"background-color: rgb({red}, {green}, {blue});")
+        #led.red = red/255
+        #led.green = green/255
+        #led.blue = blue/255
+
         if (brighness <= 50) or (red < 125 and green < 125 and blue < 125):
             self.label_r.setStyleSheet("color: rgb(255, 255, 255)")
             self.label_g.setStyleSheet("color: rgb(255, 255, 255)")
@@ -90,9 +112,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.menubar.setStyleSheet("color: rgb(0, 0, 0)")
             self.menuReset.setStyleSheet("color: rgb(0, 0, 0)")
             
-
-    
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     Window = MainWindow()
