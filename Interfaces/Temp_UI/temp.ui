@@ -560,7 +560,7 @@ selection-color: rgb(170, 255, 0);</string>
            </widget>
           </item>
           <item>
-           <widget class="QListView" name="List_data"/>
+           <widget class="QListWidget" name="List_data"/>
           </item>
          </layout>
         </widget>

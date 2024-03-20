@@ -203,7 +203,7 @@ class Ui_MainWindow(object):
         self.data_label.setObjectName("data_label")
         self.horizontalLayout_4.addWidget(self.data_label)
         self.verticalLayout_3.addWidget(self.widget_7)
-        self.List_data = QtWidgets.QListView(self.Derecha)
+        self.List_data = QtWidgets.QListWidget(self.Derecha)
         self.List_data.setObjectName("List_data")
         self.verticalLayout_3.addWidget(self.List_data)
         self.horizontalLayout_2.addWidget(self.Derecha)
@@ -231,13 +231,3 @@ class Ui_MainWindow(object):
         self.Historic_button.setText(_translate("MainWindow", "Historic"))
         self.data_label.setText(_translate("MainWindow", "Last:"))
 import temp_data_rc
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
