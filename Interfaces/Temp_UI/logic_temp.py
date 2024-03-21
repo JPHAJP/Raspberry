@@ -58,6 +58,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.List_data.clear()
  
     def change_value(self):
+        if self.Max_slider.value() < self.Min_slider.value():
+            self.Max_slider.setValue(self.Min_slider.value())
         self.min_label.setText(str(self.Min_slider.value()))
         self.max_label.setText(str(self.Max_slider.value()))
     
@@ -102,6 +104,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def data_gen(self, elements):
         global data
+        data=[]
         for _ in range(elements):
             t=self.sensor_temp()
             h=self.sensor_humedad()
