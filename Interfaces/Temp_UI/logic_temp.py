@@ -15,7 +15,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.data_list=[]
 
         #Firebase
-        cred = credentials.Certificate("Interfaces\Temp_UI\serviceAccountKey.json")
+        cred = credentials.Certificate("serviceAccountKey.json")
         firebase_admin.initialize_app(cred)
 
         db=firestore.client()
