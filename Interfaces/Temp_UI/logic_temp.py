@@ -112,12 +112,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             date= datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             data.append([t,h,p,date])
             sleep(0.1)
+    
     def sensor_temp(self):
         return round(random.uniform(-10,40),2)
         #aprox en puebla 16°C
+    
     def sensor_humedad(self):
         return round(random.uniform(20,80),2)
         #aprox en puebla 60%
+    
     def sensor_presion(self):
         return round(random.uniform(99,103),2)
 
