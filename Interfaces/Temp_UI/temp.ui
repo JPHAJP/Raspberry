@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>620</width>
-    <height>500</height>
+    <height>560</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -111,13 +111,13 @@
          <property name="minimumSize">
           <size>
            <width>150</width>
-           <height>400</height>
+           <height>450</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>150</width>
-           <height>500</height>
+           <height>550</height>
           </size>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -262,19 +262,31 @@
           </item>
           <item>
            <widget class="QWidget" name="widget_6" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>18</height>
+              <height>35</height>
              </size>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
               <widget class="QLabel" name="label_2">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
+               </property>
                <property name="maximumSize">
                 <size>
                  <width>30</width>
-                 <height>15</height>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -287,10 +299,16 @@
              </item>
              <item>
               <widget class="QLabel" name="label_3">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
+               </property>
                <property name="maximumSize">
                 <size>
                  <width>30</width>
-                 <height>15</height>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -451,6 +469,25 @@ selection-color: rgb(170, 255, 0);</string>
             </property>
             <property name="text">
              <string>Reset Values</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clean_button">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Clean List</string>
             </property>
            </widget>
           </item>

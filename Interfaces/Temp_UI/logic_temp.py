@@ -22,6 +22,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Last_button.clicked.connect(self.last_data)
         self.Reset_button.clicked.connect(self.reset_values)
         self.comboBox.currentIndexChanged.connect(self.selection_change)
+        self.clean_button.clicked.connect(self.List_data.clear)
 
     def selection_change(self):
         if self.comboBox.currentText() == "Temperature":
@@ -80,8 +81,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def historic_data(self):
         self.data_label.setText("Historic:")
         global data
+        filtered_data = []
+        if self.comboBox.currentText() == "Temperature":
+            j=0
+        elif self.comboBox.currentText() == "Humidity":
+            
+            j=1
+        elif self.comboBox.currentText() == "Pressure":
+            j=2
+        else:
+            j=0
         for i in range(len(data)):
-            self.List_data.addItem(f"{data[i][0]}°C, {data[i][1]}%, {data[i][2]}kPa, {data[i][3]}")
+            if data[i][j] >= self.Min_slider.value() and data[i][j] <= self.Max_slider.value():
+                filtered_data.append(data[i])
+        if filtered_data == []:
+            self.List_data.addItem("No data")
+        else:
+            for i in range(len(filtered_data)):
+                self.List_data.addItem(f"{filtered_data[i][0]}°C, {filtered_data[i][1]}%, {filtered_data[i][2]}kPa, {filtered_data[i][3]}")
 
     def data_gen(self, elements):
         global data
@@ -96,12 +113,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         return round(random.uniform(-10,40),2)
         #aprox en puebla 16°C
     def sensor_humedad(self):
-        return round(random.uniform(40,80),2)
+        return round(random.uniform(20,80),2)
         #aprox en puebla 60%
     def sensor_presion(self):
         return round(random.uniform(99,103),2)
 
-            
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     Window = MainWindow()
