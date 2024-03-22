@@ -12,15 +12,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         QtWidgets.QMainWindow.__init__(self,*args, **kwargs)
         self.setupUi(self)
         #My code
-        self.data_list=[]
+        self.data=[]
 
         #Firebase
-        cred = credentials.Certificate("serviceAccountKey.json")
+        cred = credentials.Certificate('serviceAccountKey.json')
         firebase_admin.initialize_app(cred)
 
         db=firestore.client()
         self.clima_ref=db.collection('clima')
-        self.actual_ref=db.collection('actuales').document('zsvSEgB2aB1LqNPMdFC0')
+        self.actual_ref=db.collection('actual').document('zsvSEgB2aB1LqNPMdFC0')
 
         #Interface
         self.input_data.setText("0")
@@ -120,8 +120,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         print(f"Last data: {data}")
         self.List_data.addItem(f"{data['temp']}°C, {data['hum']}%, {data['pres']}kPa, {data['datetime']}")
 
-
-
         # global data
         # if len(data) > 0:
         #     self.List_data.addItem(f"{data[-1][0]}°C, {data[-1][1]}%, {data[-1][2]}kPa, {data[-1][3]}")
@@ -132,18 +130,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.data_label.setText("Historic:")
         filtered_data = []
         if self.comboBox.currentText() == "Temperature":
-            j=0
+            j='temp'
         elif self.comboBox.currentText() == "Humidity":
             
-            j=1
+            j='hum'
         elif self.comboBox.currentText() == "Pressure":
-            j=2
-        else:
-            j=0
+            j='pres'
 
-        data=self.clima_ref.get()
+        #data=self.clima_ref.get(params={'orderBy':'"datetime"'})
+        data=self.clima_ref.order_by('datetime').get()
         for doc in data:
-            if doc.to_dict()[self.comboBox.currentText().lower()] >= self.Min_slider.value() and doc.to_dict()[self.comboBox.currentText().lower()] <= self.Max_slider.value():
+            if doc.to_dict()[j] >= self.Min_slider.value() and doc.to_dict()[j] <= self.Max_slider.value():
                 filtered_data.append(doc.to_dict())
         if filtered_data == []:
             self.List_data.addItem("No data")
