@@ -1,0 +1,26 @@
+<RCC>
+  <qresource prefix="Logo">
+    <file>delete_press.png</file>
+    <file>basura.png</file>
+    <file>bitmap.png</file>
+    <file>LOGO.png</file>
+  </qresource>
+  <qresource prefix="Imagenes">
+    <file>bolillo.png</file>
+    <file>concha.png</file>
+    <file>cuernito.png</file>
+    <file>dona.png</file>
+    <file>mantecada.png</file>
+    <file>oreja.png</file>
+    <file>pinguino.png</file>
+    <file>rebanada.png</file>
+    <file>reja.png</file>
+    <file>telera.png</file>
+    <file>torta.png</file>
+    <file>Donuts.png</file>
+    <file>DOMI.jpeg</file>
+    <file>qr.png</file>
+    <file>publicidad.png</file>
+    <file>delete.png</file>
+  </qresource>
+</RCC>
