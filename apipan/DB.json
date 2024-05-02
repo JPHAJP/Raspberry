@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "name": "concha",
+        "price": 10
+    },
+    {
+        "id": 2,
+        "name": "dona",
+        "price": 25
+    },
+    {
+        "id": 3,
+        "name": "pinguino",
+        "price": 13
+    },
+    {
+        "id": 4,
+        "name": "reja",
+        "price": 12
+    },
+    {
+        "id": 5,
+        "name": "mantecada",
+        "price": 14
+    }
+]

@@ -1,14 +1,13 @@
+import socket, cv2, pickle, struct, imutils, time, firebase_admin
 from mainui import *
 from datetime import datetime
-import firebase_admin
 from firebase_admin import credentials, firestore
-import cv2
 #import numpy as np
 from ultralytics import YOLO
 from PyQt5.QtCore import QTimer, QObject, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QPainter, QPen, QColor, QImage, QPixmap
 #from PyQt5.QtWidgets import QLabel
-import time
+
 
 #pyuic5 -x .\ejemplo_2.ui -o ejemplo_2.py
 
@@ -23,23 +22,44 @@ class CameraThread(QThread):
         super().__init__()
     
     def run(self):
-        cap = cv2.VideoCapture(0)
-        model = YOLO(r'best.pt')
+        host_ip = '192.168.50.192'      #rasp
+        #host_ip = '192.168.50.19'       #jplaptop
+
+        client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        port = 9999
+        client_socket.connect((host_ip,port)) # a tuple
+        data = b""
+        payload_size = struct.calcsize("Q")
+        #cap = cv2.VideoCapture(0)
+        #model = YOLO(r'best.pt')
         prev_time = time.time()
 
         while True:
+            while len(data) < payload_size:
+                packet = client_socket.recv(4*1024) # 4K
+                if not packet: break
+                data+=packet
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack("Q",packed_msg_size)[0]
+            
+            while len(data) < msg_size:
+                data += client_socket.recv(4*1024)
+            frame_data = data[:msg_size]
+            data  = data[msg_size:]
+            frame = pickle.loads(frame_data)
+
+            #-----------------------------------#
             time_elapsed = time.time() - prev_time
             if time_elapsed > 1./5:
-                ret, frame = cap.read()
-                if ret:
-                    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    results = model(rgbImage, conf=0.6)
-                    rgbImage = results[0].plot()
-                    h, w, ch = rgbImage.shape
-                    bytesPerLine = ch * w
-                    convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                    p = convertToQtFormat.scaled(410, 320)
-                    self.changePixmap.emit(p)
+                rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                #results = model(rgbImage, conf=0.6)
+                #rgbImage = results[0].plot()
+                h, w, ch = rgbImage.shape
+                bytesPerLine = ch * w
+                convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+                p = convertToQtFormat.scaled(410, 320)
+                self.changePixmap.emit(p)
                 prev_time = time.time()
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -49,7 +69,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     #UICODE
 
         #Firebase
-        cred = credentials.Certificate('serviceAccountKey.json')
+        cred = credentials.Certificate('Interfaces\ProyectoUI\serviceAccountKey.json')
         firebase_admin.initialize_app(cred)
 
         db=firestore.client()
@@ -71,8 +91,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         #self.pre_model = r'AAA.pt'
         self.flag = False
         self.activate = False
-        self.camera = cv2.VideoCapture(0)
-        self.model = YOLO(r'best.pt')
+        #self.camera = cv2.VideoCapture(0)
+        #self.model = YOLO(r'best.pt')
 
         #Parámetros de la interfaz:
         #self.label = QtWidgets.QLabel(self)
@@ -177,7 +197,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.stackedWidget.setCurrentIndex(num)
         else:
             self.stackedWidget.setCurrentIndex(num)
-            self.camera.release()
+            #self.camera.release()
         self.update_time(num)
         self.update_order(num)
         #print(f'Pantalla {num}')
@@ -221,35 +241,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         print(f'Producto {num}')
         self.cambiar_pantalla(2)
 
-    def mostrar_camara(self):
-        self.timer = QtCore.QTimer(self)  
-        self.timer.timeout.connect(self.mostrar_camara)
-        self.timer.start(200) 
-        success, frame = self.camera.read()
-
-        if success:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            resized_frame = cv2.resize(frame, (410, 320))
-            
-
-            #For testing
-            #annotated_frame=resized_frame
-            
-            #Final
-            results = self.model(resized_frame, conf=0.6)
-            annotated_frame = results[0].plot()
-            print('Frame')
-
-            #Convierte de OpenCV a QTimage
-            height, width, channel = annotated_frame.shape
-            bytes_per_line = 3 * width
-            qt_image = QtGui.QImage(annotated_frame.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
-
-            #Muestra la imagen en la interfaz
-            pixmap = QtGui.QPixmap.fromImage(qt_image)
-            self.cam.setPixmap(pixmap)
-        else:
-            self.camera.release()
 
     @pyqtSlot(QImage)
     def setImage(self, image):
