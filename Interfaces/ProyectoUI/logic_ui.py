@@ -1,9 +1,9 @@
-import socket, cv2, pickle, struct, imutils, time, firebase_admin
+import socket, cv2, pickle, struct, imutils, time, firebase_admin, qrcode, os, serial
 from mainui import *
 from datetime import datetime
 from firebase_admin import credentials, firestore
 #import numpy as np
-from ultralytics import YOLO
+#from ultralytics import YOLO
 from PyQt5.QtCore import QTimer, QObject, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QPainter, QPen, QColor, QImage, QPixmap
 #from PyQt5.QtWidgets import QLabel
@@ -57,10 +57,10 @@ class CameraThread(QThread):
             #-----------------------------------#
         #cap = cv2.VideoCapture(0)
         #model = YOLO(r'best.pt')
-        #while True:
-            # prev_time = time.time()
-            # time_elapsed = time.time() - prev_time
-            # if time_elapsed > 1./5:
+        while True:
+            prev_time = time.time()
+            time_elapsed = time.time() - prev_time
+            if time_elapsed > 1./5:
             #     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             #     #results = model(rgbImage, conf=0.6)
             #     #rgbImage = results[0].plot()
@@ -69,27 +69,37 @@ class CameraThread(QThread):
             #     convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
             #     p = convertToQtFormat.scaled(410, 320)
             #     self.changePixmap.emit(p)
-            #     prev_time = time.time()
+                print('hola')
+                prev_time = time.time()
+            print('adios')
+            status=self.cam_ref.get().to_dict('status')
+            print(status)
+            if status:
+                data = self.cam_ref.get().to_dict()
+                print(data)
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self,*args, **kwargs)
         self.setupUi(self)
     #UICODE
-
+        #QR
+        self.qr_file_path = os.path.join("Interfaces", "ProyectoUI", "resources", "qr.png")
+        print(self.qr_file_path)
+        
         #Firebase
-        cred = credentials.Certificate('Interfaces\ProyectoUI\serviceAccountKey.json')
+        cred = credentials.Certificate('Interfaces\ProyectoUI\pan-oramico-firebase.json')
         firebase_admin.initialize_app(cred)
-
         db=firestore.client()
-        self.data_ref=db.collection('data')
+        self.panes_ref=db.collection('panes')
+        self.cam_ref=db.collection('cam').document('P1xd33ke4RiCYFu9G75C')
+        self.ordenes_ref=db.collection('ordenes')
+        self.totales_ref=db.collection('totales')
         self.last_ref=db.collection('last').document('wcNKTliw70OH5H32UDZe')
 
     #-----------UPDATE----------------#
-        self.employee_code = 3987
-        self.pss = ''
-        self.pass_label.setText('')
-        self.admin = False
+        self.reset()
+        self.precios_update()
 
         self.stackedWidget.setCurrentIndex(0)
         self.order_num=self.last_ref.get().to_dict()['order']
@@ -121,6 +131,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     #Pantalla 2 Cart
         self.generar_button.clicked.connect(lambda: self.cambiar_pantalla(3))
+        self.generar_button.clicked.connect(self.create_order_db)
         self.editar_button.clicked.connect(lambda: self.cambiar_pantalla(4))
         self.minus_button0.clicked.connect(lambda: self.restar(0))
         self.plus_button0.clicked.connect(lambda: self.sumar(0))
@@ -149,6 +160,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     #Pantalla 3 Ticket
         self.terminar_button.clicked.connect(self.get_new_order)
         self.terminar_button.clicked.connect(lambda: self.cambiar_pantalla(0))
+        self.terminar_button.clicked.connect(self.reset)
         
 
     #Pantalla 4 Auth
@@ -190,13 +202,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             current_label = time_labels[num]
             current_label.setText(datetime.now().strftime("%H:%M %d-%m-%Y"))
         #orders
-
+        
     def update_order(self,num):
         order_labels = [self.order_label_0, self.order_label_1, self.order_label_2, self.order_label_3]
         if num != 4 and num != 5:
             self.current_order = order_labels[num]
             self.current_order.setText(f'Orden: #{str(self.order_num)}')
         self.last_ref.update({'order':self.order_num})
+        self.last_ref.update({'fecha':datetime.now().strftime("%H:%M %d-%m-%Y")})
 
     def get_new_order(self):
         #print('New order')
@@ -223,13 +236,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.stackedWidget.setCurrentIndex(num)
             self.editar_button.setText('Editar')
         elif num == 1:
+            self.precios_update()
+            self.cam_ref.update({'status':True})
             #self.mostrar_camara()
             self.stackedWidget.setCurrentIndex(num)
         else:
+            self.cam_ref.update({'status':False})
             self.stackedWidget.setCurrentIndex(num)
             #self.camera.release()
         self.update_time(num)
         self.update_order(num)
+        self.update_total_oder()
         #print(f'Pantalla {num}')
     
     def button_pushed(self, num):
@@ -252,29 +269,103 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def sudo(self):
         self.editar_button.setText('Agregar')
         self.admin = True
-        print(self.editar_button.text())
+        self.asistencia_requerida = 1
+        #print(self.editar_button.text())
 
     def sumar(self, num):
         if self.admin == True:
             label = getattr(self,f'qty_label{num}')
             label.setText(str(int(label.text())+1))
-            #contar total y sumar
-            for i in range(11):
-                catidad = getattr(self,f'qty_label{i}')
-            self.articulos_label.setText(str(int(self.articulos_label.text())+1))
-            self.articulos_label_2.setText(str(int(self.articulos_label.text())+1))
-            
+        self.update_total_oder()
+
     def restar(self,num):
         if self.admin == True:
             label = getattr(self,f'qty_label{num}')
             if int(label.text()) > 0:
                 label.setText(str(int(label.text())-1))
+        self.update_total_oder()
 
+    def update_total_oder(self):
+        total_art = 0
+        for i in range(11):
+            label = getattr(self,f'qty_label{i}')
+            total_art += int(label.text())
+        self.articulos_label.setText(str(total_art))
+        self.articulos_label_2.setText(str(total_art))
+
+        total_price = 0
+        for i in range(11):
+            label = getattr(self,f'qty_label{i}')
+            precio_label = getattr(self,f'precio_label{i}')
+            total_price += int(label.text())*float(precio_label.text()[1:])
+        self.total_label.setText(f'${total_price}')
+        self.total_label_2.setText(f'${total_price}')
+
+    def precios_update(self):
+        #obtener precios de firebase y mostrarlos en sus labels
+        self.precios = {}
+        panes_docs = self.panes_ref.get()
+        for doc in panes_docs:
+            dato_pan = doc.to_dict()
+            tipo_pan = dato_pan['Pan']
+            precio_pan = dato_pan['Precio']
+            self.precios[tipo_pan]=precio_pan
+        #print(self.precios)
+
+        #guardar precios en labels con diccionario de precios
+        for i in range(11):
+            precio_label = getattr(self,f'precio_label{i}')
+            articulo_label = getattr(self,f'articulo_label{i}')
+
+            tipo_pan = articulo_label.text()
+
+            if tipo_pan in self.precios:
+                precio_label.setText(f'${self.precios[tipo_pan]}')
+            else:
+                precio_label.setText('$0')
     
     def productos(self,num):
         print(f'Producto {num}')
         self.cambiar_pantalla(2)
 
+    def reset(self):
+        for i in range(11):
+                label = getattr(self,f'qty_label{i}')
+                label.setText('0')
+                label_art = getattr(self,f'articulo_label{i}')
+                art=label_art.text()
+                if art == 'Pingüino':
+                    art = 'Pinguino'
+                self.cam_ref.update({art:0})
+        self.update_total_oder()
+        self.employee_code = 3987
+        self.pss = ''
+        self.pass_label.setText('')
+        self.admin = False
+        self.asistencia_requerida = 0
+
+    def create_order_db(self):
+        order_art = {}
+        order_art['orden'] = int(self.order_num)
+        order_art['venta'] = float(self.total_label.text()[1:])
+        order_art['art'] = int(self.articulos_label.text())
+        order_art['asistencia'] = self.asistencia_requerida
+        for i in range(11):
+            label = getattr(self,f'qty_label{i}')
+            label_precio = getattr(self,f'precio_label{i}')
+            if int(label.text()) > 0:
+                articulo_label = getattr(self,f'articulo_label{i}')
+                order_art[articulo_label.text()] = (int(label.text()),float(label_precio.text()[1:]))
+        #print(order_art)
+        self.ordenes_ref.add(order_art)
+
+        qr_data = str(order_art)
+        qr = qrcode.make(qr_data, box_size=7.9)
+        qr.save(self.qr_file_path)
+
+        self.QR_code.setPixmap(QPixmap(self.qr_file_path))
+
+    
 
     @pyqtSlot(QImage)
     def setImage(self, image):
