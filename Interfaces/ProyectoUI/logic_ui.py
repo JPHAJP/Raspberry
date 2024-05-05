@@ -22,45 +22,54 @@ class CameraThread(QThread):
         super().__init__()
     
     def run(self):
-        host_ip = '192.168.50.192'      #rasp
-        #host_ip = '192.168.50.19'       #jplaptop
-
-        client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        port = 9999
-        client_socket.connect((host_ip,port)) # a tuple
-        data = b""
-        payload_size = struct.calcsize("Q")
-        #cap = cv2.VideoCapture(0)
-        #model = YOLO(r'best.pt')
-        prev_time = time.time()
-
-        while True:
-            while len(data) < payload_size:
-                packet = client_socket.recv(4*1024) # 4K
-                if not packet: break
-                data+=packet
-            packed_msg_size = data[:payload_size]
-            data = data[payload_size:]
-            msg_size = struct.unpack("Q",packed_msg_size)[0]
-            
-            while len(data) < msg_size:
-                data += client_socket.recv(4*1024)
-            frame_data = data[:msg_size]
-            data  = data[msg_size:]
-            frame = pickle.loads(frame_data)
+        #host_ip = '172.18.141.91'      #rasp
+        host_ip = '172.18.59.33'       #jplaptop
+        # try:
+        #     client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        #     port = 9999
+        #     client_socket.connect((host_ip,port)) # a tuple
+        #     data = b""
+        #     payload_size = struct.calcsize("Q")
+        # except:
+        #     print('Error en la conexiónn al servidor no se puede iniciar la cámara')
+        #     pass
+        
+        
+        # while True:
+        #     try:
+        #         while len(data) < payload_size:
+        #             packet = client_socket.recv(4*1024) # 4K
+        #             if not packet: break
+        #             data+=packet
+        #         packed_msg_size = data[:payload_size]
+        #         data = data[payload_size:]
+        #         msg_size = struct.unpack("Q",packed_msg_size)[0]
+                
+        #         while len(data) < msg_size:
+        #             data += client_socket.recv(4*1024)
+        #         frame_data = data[:msg_size]
+        #         data  = data[msg_size:]
+        #         frame = pickle.loads(frame_data)
+        #     except:
+        #         print('Error en la conexión al servidor')
+        #         pass
 
             #-----------------------------------#
-            time_elapsed = time.time() - prev_time
-            if time_elapsed > 1./5:
-                rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                #results = model(rgbImage, conf=0.6)
-                #rgbImage = results[0].plot()
-                h, w, ch = rgbImage.shape
-                bytesPerLine = ch * w
-                convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                p = convertToQtFormat.scaled(410, 320)
-                self.changePixmap.emit(p)
-                prev_time = time.time()
+        #cap = cv2.VideoCapture(0)
+        #model = YOLO(r'best.pt')
+        #while True:
+            # prev_time = time.time()
+            # time_elapsed = time.time() - prev_time
+            # if time_elapsed > 1./5:
+            #     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            #     #results = model(rgbImage, conf=0.6)
+            #     #rgbImage = results[0].plot()
+            #     h, w, ch = rgbImage.shape
+            #     bytesPerLine = ch * w
+            #     convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+            #     p = convertToQtFormat.scaled(410, 320)
+            #     self.changePixmap.emit(p)
+            #     prev_time = time.time()
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
@@ -113,9 +122,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     #Pantalla 2 Cart
         self.generar_button.clicked.connect(lambda: self.cambiar_pantalla(3))
         self.editar_button.clicked.connect(lambda: self.cambiar_pantalla(4))
-        self.minus_button.clicked.connect(self.restar)
-        self.plus_button.clicked.connect(self.sumar)
-        self.trash_button.clicked.connect(self.eliminar)
+        self.minus_button0.clicked.connect(lambda: self.restar(0))
+        self.plus_button0.clicked.connect(lambda: self.sumar(0))
+        self.minus_button1.clicked.connect(lambda: self.restar(1))
+        self.plus_button1.clicked.connect(lambda: self.sumar(1))
+        self.minus_button2.clicked.connect(lambda: self.restar(2))
+        self.plus_button2.clicked.connect(lambda: self.sumar(2))
+        self.minus_button3.clicked.connect(lambda: self.restar(3))
+        self.plus_button3.clicked.connect(lambda: self.sumar(3))
+        self.minus_button4.clicked.connect(lambda: self.restar(4))
+        self.plus_button4.clicked.connect(lambda: self.sumar(4))
+        self.minus_button5.clicked.connect(lambda: self.restar(5))
+        self.plus_button5.clicked.connect(lambda: self.sumar(5))
+        self.minus_button6.clicked.connect(lambda: self.restar(6))
+        self.plus_button6.clicked.connect(lambda: self.sumar(6))
+        self.minus_button7.clicked.connect(lambda: self.restar(7))
+        self.plus_button7.clicked.connect(lambda: self.sumar(7))
+        self.minus_button8.clicked.connect(lambda: self.restar(8))
+        self.plus_button8.clicked.connect(lambda: self.sumar(8))
+        self.minus_button9.clicked.connect(lambda: self.restar(9))
+        self.plus_button9.clicked.connect(lambda: self.sumar(9))
+        self.minus_button10.clicked.connect(lambda: self.restar(10))
+        self.plus_button10.clicked.connect(lambda: self.sumar(10))
+        #self.trash_button_ejemplo.clicked.connect(self.eliminar)
         
     #Pantalla 3 Ticket
         self.terminar_button.clicked.connect(self.get_new_order)
@@ -153,6 +182,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
 
     #-----------FUNCTIONS----------------#
+
     def update_time(self,num):
         time_labels = [self.time_label_0, self.time_label_1, self.time_label_2, self.time_label_3, self.time_label_4]
         #time
@@ -224,18 +254,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.admin = True
         print(self.editar_button.text())
 
-    def sumar(self):
+    def sumar(self, num):
         if self.admin == True:
-            self.qty_label.setText(str(int(self.qty_label.text())+1))
+            label = getattr(self,f'qty_label{num}')
+            label.setText(str(int(label.text())+1))
+            #contar total y sumar
+            for i in range(11):
+                catidad = getattr(self,f'qty_label{i}')
+            self.articulos_label.setText(str(int(self.articulos_label.text())+1))
+            self.articulos_label_2.setText(str(int(self.articulos_label.text())+1))
             
-    def restar(self):
+    def restar(self,num):
         if self.admin == True:
-            if int(self.qty_label.text()) > 0:
-                self.qty_label.setText(str(int(self.qty_label.text())-1))
+            label = getattr(self,f'qty_label{num}')
+            if int(label.text()) > 0:
+                label.setText(str(int(label.text())-1))
 
-    def eliminar(self):
-        if self.admin == True:
-            pass
     
     def productos(self,num):
         print(f'Producto {num}')
