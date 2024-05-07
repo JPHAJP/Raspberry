@@ -3,9 +3,10 @@ from mainui import *
 from datetime import datetime
 from firebase_admin import credentials, firestore
 #import numpy as np
-#from ultralytics import YOLO
+from ultralytics import YOLO
 from PyQt5.QtCore import QTimer, QObject, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QPainter, QPen, QColor, QImage, QPixmap
+from time import sleep
 #from PyQt5.QtWidgets import QLabel
 
 
@@ -14,69 +15,109 @@ from PyQt5.QtGui import QPainter, QPen, QColor, QImage, QPixmap
 # class Ui_GroupBox(Ui_GroupBox):
 #     pass
 
-global estado_pantalla
+
 class CameraThread(QThread):
     changePixmap = pyqtSignal(QImage)
+    data_signal = pyqtSignal(dict)
 
-    def __init__(self, estado_pantalla):
+    def __init__(self):
         super().__init__()
+        self.status = None
     
-    def run(self):
-        #host_ip = '172.18.141.91'      #rasp
-        host_ip = '172.18.59.33'       #jplaptop
-        # try:
-        #     client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        #     port = 9999
-        #     client_socket.connect((host_ip,port)) # a tuple
-        #     data = b""
-        #     payload_size = struct.calcsize("Q")
-        # except:
-        #     print('Error en la conexiónn al servidor no se puede iniciar la cámara')
-        #     pass
-        
-        
-        # while True:
-        #     try:
-        #         while len(data) < payload_size:
-        #             packet = client_socket.recv(4*1024) # 4K
-        #             if not packet: break
-        #             data+=packet
-        #         packed_msg_size = data[:payload_size]
-        #         data = data[payload_size:]
-        #         msg_size = struct.unpack("Q",packed_msg_size)[0]
-                
-        #         while len(data) < msg_size:
-        #             data += client_socket.recv(4*1024)
-        #         frame_data = data[:msg_size]
-        #         data  = data[msg_size:]
-        #         frame = pickle.loads(frame_data)
-        #     except:
-        #         print('Error en la conexión al servidor')
-        #         pass
+    def handle_status(self, status):
+        self.status_page = status
 
-            #-----------------------------------#
-        #cap = cv2.VideoCapture(0)
-        #model = YOLO(r'best.pt')
-        # while True:
-        #     prev_time = time.time()
-        #     time_elapsed = time.time() - prev_time
-        #     if time_elapsed > 1./5:
-        #     #     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        #     #     #results = model(rgbImage, conf=0.6)
-        #     #     #rgbImage = results[0].plot()
-        #     #     h, w, ch = rgbImage.shape
-        #     #     bytesPerLine = ch * w
-        #     #     convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-        #     #     p = convertToQtFormat.scaled(410, 320)
-        #     #     self.changePixmap.emit(p)
-        #         print('hola')
-        #         prev_time = time.time()
-        #     print('adios')
-        #     status=self.cam_ref.get().to_dict('status')
-        #     print(status)
-        #     if status:
-        #         data = self.cam_ref.get().to_dict()
-        #         print(data)
+    def run(self):
+        print('Thread started')
+        cap = cv2.VideoCapture(0)
+        model = YOLO(r'Interfaces\ProyectoUI\best.pt')
+        prev_time = time.time()
+
+        try:
+            #ser=serial.Serial('/dev/ttyACM0',9600)
+            ser=serial.Serial('COM10',500000)
+        except:
+                print('No se pudo conectar con el arduino')
+                ser=None
+        
+        while True:
+            Bolillo = 0
+            Concha = 0
+            Cuernito = 0
+            Dona = 0
+            Mantecada = 0
+            Oreja = 0
+            Pinguino = 0
+            Rebanda = 0
+            Reja = 0
+            Telera = 0
+            Torta = 0
+
+            time_elapsed = time.time() - prev_time
+            if time_elapsed > 1./5:
+                ret, frame = cap.read()
+                if ret:
+                    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    #results = model(rgbImage, conf=0.6)
+                    #rgbImage = results[0].plot()
+                    h, w, ch = rgbImage.shape
+                    bytesPerLine = ch * w
+                    convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+                    p = convertToQtFormat.scaled(410, 320)
+                    self.changePixmap.emit(p)
+                prev_time = time.time()
+            #get port for arduino and send
+            
+            if ser:
+                try:
+                    take_snap=ser.readline().decode('utf-8').strip()
+                    #print(take_snap)
+                    #and self.status_page==True
+                    if take_snap=='1':
+                        print('Tomar foto')
+                        results = model(rgbImage, conf=0.6)
+                        for box in results[0].boxes:
+                            if 0 in box.cls:
+                                Bolillo += 1
+                            elif 1 in box.cls:
+                                Concha += 1
+                            elif 2 in box.cls:
+                                Cuernito += 1
+                            elif 3 in box.cls:
+                                Dona += 1
+                            elif 4 in box.cls:
+                                Mantecada += 1
+                            elif 5 in box.cls:
+                                Oreja += 1
+                            elif 6 in box.cls:
+                                Pinguino += 1
+                            elif 7 in box.cls:
+                                Rebanda += 1
+                            elif 8 in box.cls:
+                                Reja += 1
+                            elif 9 in box.cls:
+                                Telera += 1
+                            elif 10 in box.cls:
+                                Torta += 1
+                    
+                        print(f'Bolillo: {Bolillo}, Concha: {Concha}, Cuernito: {Cuernito}, Dona: {Dona}, Mantecada: {Mantecada}, Oreja: {Oreja}, Pinguino: {Pinguino}, Rebanda: {Rebanda}, Reja: {Reja}, Telera: {Telera}, Torta: {Torta}')
+                        data = {
+                                'Bolillo': Bolillo,
+                                'Concha': Concha,
+                                'Cuernito': Cuernito,
+                                'Dona': Dona,
+                                'Mantecada': Mantecada,
+                                'Oreja': Oreja,
+                                'Pinguino': Pinguino,
+                                'Rebanda': Rebanda,
+                                'Reja': Reja,
+                                'Telera': Telera,
+                                'Torta': Torta,
+                                }
+                        self.data_signal.emit(data)
+                except:
+                    sleep(.1)
+                    print('Error en foto')
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
@@ -105,21 +146,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.order_num=self.last_ref.get().to_dict()['order']
         self.update_order(0)   
 
-        #Parámetros del modelo:
-        #self.cam_num = 0
-        #self.pre_model = r'AAA.pt'
         self.flag = False
         self.activate = False
-        #self.camera = cv2.VideoCapture(0)
-        #self.model = YOLO(r'best.pt')
 
-        #Parámetros de la interfaz:
-        #self.label = QtWidgets.QLabel(self)
-        #self.label.setGeometry(50, 50, 700, 540)
-        #self.pushButton.clicked.connect(self.close_popup)
-
-        self.th = CameraThread(self)
+        self.lista_labels = ['Bolillo','Telera','Torta','Concha','Dona','Mantecada','Pinguino','Oreja','Reja','Rebanda','Cuernito']
+        
+        self.th = CameraThread()
         self.th.changePixmap.connect(self.setImage)
+        self.th.data_signal.connect(self.cam_listener)
         self.th.start()
 
     #-----------PANTALLAS----------------#
@@ -127,6 +161,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.empezar_button.clicked.connect(lambda: self.cambiar_pantalla(1))
 
     #Pantalla 1 Cam
+        #self.revisar_button.clicked.connect(self.pasar_data_cart)
         self.revisar_button.clicked.connect(lambda: self.cambiar_pantalla(2))
 
     #Pantalla 2 Cart
@@ -235,13 +270,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.editar_button.setText('Editar')
         elif num == 1:
             self.precios_update()
-            self.cam_ref.update({'status':True})
-            #self.mostrar_camara()
+            self.flag = True
+            self.stackedWidget.setCurrentIndex(num)
+        elif num == 2:
+            self.flag = False
             self.stackedWidget.setCurrentIndex(num)
         else:
-            self.cam_ref.update({'status':False})
             self.stackedWidget.setCurrentIndex(num)
-            #self.camera.release()
         self.update_time(num)
         self.update_order(num)
         self.update_total_oder()
@@ -318,6 +353,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             if tipo_pan in self.precios:
                 precio_label.setText(f'${self.precios[tipo_pan]}')
+            elif tipo_pan == 'Pingüino':
+                precio_label.setText(f'${self.precios["Pinguino"]}')
             else:
                 precio_label.setText('$0')
     
@@ -340,6 +377,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pass_label.setText('')
         self.admin = False
         self.asistencia_requerida = 0
+        self.listWidget.clear()
 
     def create_order_db(self):
         order_art = {}
@@ -368,8 +406,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         #print(order_art)
         self.ordenes_ref.add(order_art)
 
+        self.amount = 7.9
+        if order_art['art'] > 0:
+            self.amount = 6.5
+
         qr_data = str(order_art)
-        qr = qrcode.make(qr_data, box_size=7.9)
+        qr = qrcode.make(qr_data, box_size=self.amount)
         qr.save(self.qr_file_path)
 
         self.QR_code.setPixmap(QPixmap(self.qr_file_path))
@@ -377,7 +419,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @pyqtSlot(QImage)
     def setImage(self, image):
         self.cam.setPixmap(QPixmap.fromImage(image))
-
+    
+    def cam_listener(self, data):
+        for key in data:
+            if data[key] > 0:
+                self.listWidget.addItem(f'{key}: {data[key]}')
+                #print(self.flag)
+                if self.flag:
+                    #enviar el item a su respectivo label
+                    for i in range(11):
+                        if key == self.lista_labels[i]:
+                            print(f'{key}', {self.lista_labels[i]})
+                            label = getattr(self,f'qty_label{i}')
+                            label.setText(str(data[key]))
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
