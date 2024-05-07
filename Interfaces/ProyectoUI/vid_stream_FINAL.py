@@ -1,7 +1,13 @@
 ###-----------ESTE-------------###
-
-import cv2, requests, numpy as np, socket, pickle, struct, imutils
+import cv2, requests, numpy as np, socket, pickle, struct, imutils, firebase_admin
 from ultralytics import YOLO
+from firebase_admin import credentials, firestore
+
+# Firebase
+cred=credentials.Certificate('Interfaces\ProyectoUI\pan-oramico-firebase.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+cam_ref=db.collection('cam').document('P1xd33ke4RiCYFu9G75C')
 
 pre_model = r'C:\Users\jpha\Documents\Arquitecturas\Raspberry\Interfaces\ProyectoUI\best.pt'
 model = YOLO(pre_model)
@@ -23,6 +29,7 @@ print("LISTENING AT:",socket_address)
 
 # Socket Accept
 while True:
+	#Socket Message
 	client_socket,addr = server_socket.accept()
 	print('GOT CONNECTION FROM:',addr)
 	if client_socket:
@@ -44,4 +51,14 @@ while True:
 			key = cv2.waitKey(1) & 0xFF
 			if key ==ord('q'):
 				client_socket.close()
-				
+	#Detection and firebase save
+	data = cam_ref.get().to_dict()
+	if data['status'] == True and data['capture'] == True:
+		cam_ref.update({'capture':False})
+
+
+
+		# results = model(frame, conf=0.6)
+		# annotated_frame = results[0].plot()
+		# cv2.imwrite('frame.jpg',annotated_frame)
+		# cam_ref.update({'status':False})

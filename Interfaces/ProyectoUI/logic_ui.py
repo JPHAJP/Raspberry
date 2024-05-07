@@ -57,26 +57,26 @@ class CameraThread(QThread):
             #-----------------------------------#
         #cap = cv2.VideoCapture(0)
         #model = YOLO(r'best.pt')
-        while True:
-            prev_time = time.time()
-            time_elapsed = time.time() - prev_time
-            if time_elapsed > 1./5:
-            #     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            #     #results = model(rgbImage, conf=0.6)
-            #     #rgbImage = results[0].plot()
-            #     h, w, ch = rgbImage.shape
-            #     bytesPerLine = ch * w
-            #     convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-            #     p = convertToQtFormat.scaled(410, 320)
-            #     self.changePixmap.emit(p)
-                print('hola')
-                prev_time = time.time()
-            print('adios')
-            status=self.cam_ref.get().to_dict('status')
-            print(status)
-            if status:
-                data = self.cam_ref.get().to_dict()
-                print(data)
+        # while True:
+        #     prev_time = time.time()
+        #     time_elapsed = time.time() - prev_time
+        #     if time_elapsed > 1./5:
+        #     #     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #     #     #results = model(rgbImage, conf=0.6)
+        #     #     #rgbImage = results[0].plot()
+        #     #     h, w, ch = rgbImage.shape
+        #     #     bytesPerLine = ch * w
+        #     #     convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+        #     #     p = convertToQtFormat.scaled(410, 320)
+        #     #     self.changePixmap.emit(p)
+        #         print('hola')
+        #         prev_time = time.time()
+        #     print('adios')
+        #     status=self.cam_ref.get().to_dict('status')
+        #     print(status)
+        #     if status:
+        #         data = self.cam_ref.get().to_dict()
+        #         print(data)
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
@@ -84,18 +84,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
     #UICODE
         #QR
-        self.qr_file_path = os.path.join("Interfaces", "ProyectoUI", "resources", "qr.png")
+        self.qr_file_path = os.path.join("Interfaces","ProyectoUI","resources", "qr.png")
         print(self.qr_file_path)
         
         #Firebase
-        cred = credentials.Certificate('Interfaces\ProyectoUI\pan-oramico-firebase.json')
+        cred = credentials.Certificate('Interfaces\ProyectoUI\pan-orama-back.json')
         firebase_admin.initialize_app(cred)
         db=firestore.client()
         self.panes_ref=db.collection('panes')
-        self.cam_ref=db.collection('cam').document('P1xd33ke4RiCYFu9G75C')
+        self.cam_ref=db.collection('cam').document('tultntOMopOIwT9B12Yz')
         self.ordenes_ref=db.collection('ordenes')
-        self.totales_ref=db.collection('totales')
-        self.last_ref=db.collection('last').document('wcNKTliw70OH5H32UDZe')
+        self.totales_ref=db.collection('totales').document('Bdak4QvaeHgGgvgcaq6O')
+        self.last_ref=db.collection('last').document('7h9DXtyHl9Ewi5zHL9wy')
 
     #-----------UPDATE----------------#
         self.reset()
@@ -225,10 +225,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         #print(self.order_num)
 
     def cambiar_pantalla(self,num):
-
         global estado_pantalla
         estado_pantalla = num
-
         if num == 4 and self.admin==True:
             self.stackedWidget.setCurrentIndex(5)
         elif num == 3 and self.admin==True:
@@ -311,7 +309,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             precio_pan = dato_pan['Precio']
             self.precios[tipo_pan]=precio_pan
         #print(self.precios)
-
         #guardar precios en labels con diccionario de precios
         for i in range(11):
             precio_label = getattr(self,f'precio_label{i}')
@@ -356,6 +353,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if int(label.text()) > 0:
                 articulo_label = getattr(self,f'articulo_label{i}')
                 order_art[articulo_label.text()] = (int(label.text()),float(label_precio.text()[1:]))
+        totales=self.totales_ref.get().to_dict()
+        #print(totales)
+        totales['ventas']+=1
+        totales['ingresos']+=order_art['venta']
+        totales['escaneos']+=order_art['art']
+        totales['asistencia']+=order_art['asistencia']
+        totales['d_ventas']+=1
+        totales['d_ingresos']+=order_art['venta']
+        totales['d_escaneos']+=order_art['art']
+        totales['d_asistencia']+=order_art['asistencia']
+        #print(totales)
+        self.totales_ref.update(totales)
         #print(order_art)
         self.ordenes_ref.add(order_art)
 
@@ -364,8 +373,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         qr.save(self.qr_file_path)
 
         self.QR_code.setPixmap(QPixmap(self.qr_file_path))
-
-    
 
     @pyqtSlot(QImage)
     def setImage(self, image):
