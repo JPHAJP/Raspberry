@@ -30,12 +30,13 @@ class CameraThread(QThread):
     def run(self):
         print('Thread started')
         cap = cv2.VideoCapture(0)
-        model = YOLO(r'Interfaces\ProyectoUI\best.pt')
+        model = YOLO(r'best.pt')
         prev_time = time.time()
 
         try:
-            #ser=serial.Serial('/dev/ttyACM0',9600)
-            ser=serial.Serial('COM10',500000)
+            #ser=serial.Serial('/dev/ttyACM0',115200)
+            ser=serial.Serial('/dev/ttyUSB0',115200)
+            #ser=serial.Serial('COM10',500000)
         except:
                 print('No se pudo conectar con el arduino')
                 ser=None
@@ -125,11 +126,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
     #UICODE
         #QR
-        self.qr_file_path = os.path.join("Interfaces","ProyectoUI","resources", "qr.png")
+        self.qr_file_path = os.path.join("resources", "qr.png")
         print(self.qr_file_path)
         
         #Firebase
-        cred = credentials.Certificate('Interfaces\ProyectoUI\pan-orama-back.json')
+        cred = credentials.Certificate('pan-orama-back.json')
         firebase_admin.initialize_app(cred)
         db=firestore.client()
         self.panes_ref=db.collection('panes')
@@ -227,7 +228,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.rebanda_button_add.clicked.connect     (lambda: self.productos(9))
         self.cuernito_button_add.clicked.connect    (lambda: self.productos(10))
     
-
     #-----------FUNCTIONS----------------#
 
     def update_time(self,num):
