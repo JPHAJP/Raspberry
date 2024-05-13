@@ -11,9 +11,8 @@ from time import sleep
 
 
 #pyuic5 -x .\ejemplo_2.ui -o ejemplo_2.py
-
-# class Ui_GroupBox(Ui_GroupBox):
-#     pass
+#hcitool scan
+#sudo rfcomm connect hci0 94:E6:86:38:18:F2
 
 
 class CameraThread(QThread):
@@ -34,11 +33,12 @@ class CameraThread(QThread):
         prev_time = time.time()
 
         try:
+            ser=serial.Serial('/dev/rfcomm0',115200)
             #ser=serial.Serial('/dev/ttyACM0',115200)
-            ser=serial.Serial('/dev/ttyUSB0',115200)
+            #ser=serial.Serial('/dev/ttyUSB0',115200)
             #ser=serial.Serial('COM10',500000)
         except:
-                print('No se pudo conectar con el arduino')
+                print('No se pudo conectar con el Bluetooth')
                 ser=None
         
         while True:
@@ -55,67 +55,79 @@ class CameraThread(QThread):
             Torta = 0
 
             time_elapsed = time.time() - prev_time
-            if time_elapsed > 1./5:
+            #bypass time or adjust frames per second
+            # 1./20 = 20fps or 1./10 = 10fps
+            #time_elapsed = 5
+            if time_elapsed > 1./20:
                 ret, frame = cap.read()
                 if ret:
                     rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    #results = model(rgbImage, conf=0.6)
-                    #rgbImage = results[0].plot()
+                #------------------------------------Activate------------------------------------#
                     h, w, ch = rgbImage.shape
                     bytesPerLine = ch * w
                     convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
                     p = convertToQtFormat.scaled(410, 320)
                     self.changePixmap.emit(p)
                 prev_time = time.time()
-            #get port for arduino and send
             
+
+            #Bluetooth
             if ser:
                 try:
-                    take_snap=ser.readline().decode('utf-8').strip()
-                    #print(take_snap)
-                    #and self.status_page==True
-                    if take_snap=='1':
-                        print('Tomar foto')
-                        results = model(rgbImage, conf=0.6)
-                        for box in results[0].boxes:
-                            if 0 in box.cls:
-                                Bolillo += 1
-                            elif 1 in box.cls:
-                                Concha += 1
-                            elif 2 in box.cls:
-                                Cuernito += 1
-                            elif 3 in box.cls:
-                                Dona += 1
-                            elif 4 in box.cls:
-                                Mantecada += 1
-                            elif 5 in box.cls:
-                                Oreja += 1
-                            elif 6 in box.cls:
-                                Pinguino += 1
-                            elif 7 in box.cls:
-                                Rebanda += 1
-                            elif 8 in box.cls:
-                                Reja += 1
-                            elif 9 in box.cls:
-                                Telera += 1
-                            elif 10 in box.cls:
-                                Torta += 1
-                    
-                        print(f'Bolillo: {Bolillo}, Concha: {Concha}, Cuernito: {Cuernito}, Dona: {Dona}, Mantecada: {Mantecada}, Oreja: {Oreja}, Pinguino: {Pinguino}, Rebanda: {Rebanda}, Reja: {Reja}, Telera: {Telera}, Torta: {Torta}')
-                        data = {
-                                'Bolillo': Bolillo,
-                                'Concha': Concha,
-                                'Cuernito': Cuernito,
-                                'Dona': Dona,
-                                'Mantecada': Mantecada,
-                                'Oreja': Oreja,
-                                'Pinguino': Pinguino,
-                                'Rebanda': Rebanda,
-                                'Reja': Reja,
-                                'Telera': Telera,
-                                'Torta': Torta,
-                                }
-                        self.data_signal.emit(data)
+                    if ser.in_waiting>0:
+                        take_snap=ser.read()
+                        print(take_snap)
+                        #if data == b'1':
+                        #and self.status_page==True
+                        if take_snap==b'1':
+                            print('Tomar foto')
+                            results = model(rgbImage, conf=0.6)
+                            for box in results[0].boxes:
+                                if 0 in box.cls:
+                                    Bolillo += 1
+                                elif 1 in box.cls:
+                                    Concha += 1
+                                elif 2 in box.cls:
+                                    Cuernito += 1
+                                elif 3 in box.cls:
+                                    Dona += 1
+                                elif 4 in box.cls:
+                                    Mantecada += 1
+                                elif 5 in box.cls:
+                                    Oreja += 1
+                                elif 6 in box.cls:
+                                    Pinguino += 1
+                                elif 7 in box.cls:
+                                    Rebanda += 1
+                                elif 8 in box.cls:
+                                    Reja += 1
+                                elif 9 in box.cls:
+                                    Telera += 1
+                                elif 10 in box.cls:
+                                    Torta += 1
+                        
+                            print(f'Bolillo: {Bolillo}, Concha: {Concha}, Cuernito: {Cuernito}, Dona: {Dona}, Mantecada: {Mantecada}, Oreja: {Oreja}, Pinguino: {Pinguino}, Rebanda: {Rebanda}, Reja: {Reja}, Telera: {Telera}, Torta: {Torta}')
+                            data = {
+                                    'Bolillo': Bolillo,
+                                    'Concha': Concha,
+                                    'Cuernito': Cuernito,
+                                    'Dona': Dona,
+                                    'Mantecada': Mantecada,
+                                    'Oreja': Oreja,
+                                    'Pinguino': Pinguino,
+                                    'Rebanda': Rebanda,
+                                    'Reja': Reja,
+                                    'Telera': Telera,
+                                    'Torta': Torta,
+                                    }
+                            self.data_signal.emit(data)
+#------------------------------------for debugging purposes only (CAM)------------------------------------------------#
+                            # rgbImage = results[0].plot()
+                            # h, w, ch = rgbImage.shape
+                            # bytesPerLine = ch * w
+                            # convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+                            # p = convertToQtFormat.scaled(410, 320)
+                            # self.changePixmap.emit(p)
                 except:
                     sleep(.1)
                     print('Error en foto')
@@ -431,7 +443,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if key == self.lista_labels[i]:
                             print(f'{key}', {self.lista_labels[i]})
                             label = getattr(self,f'qty_label{i}')
-                            label.setText(str(data[key]))
+                            if data[key] > 0:
+                                label.setText(str(int(label.text())+data[key]))
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
